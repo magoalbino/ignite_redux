@@ -1,9 +1,10 @@
 import { useSelector } from "react-redux";
+import { IState } from "../store";
+import { ICartItem } from "../store/modules/cart/types";
 
 const Cart = () => {
-  const state = useSelector((state) => state);
-
-  console.log(state);
+  //O estado tem o formado de IState e o retorno é do tipo ICartItem (segundo parametro do generic)
+  const cart = useSelector<IState, ICartItem[]>((state) => state.cart.items);
 
   return (
     <table>
@@ -15,7 +16,16 @@ const Cart = () => {
           <th>Subtotal</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody>
+        {cart.map((item) => (
+          <tr key={item.product.id}>
+            <td>{item.product.title}</td>
+            <td>{item.product.price}</td>
+            <td>{item.quantity}</td>
+            <td>{(item.quantity * item.product.price).toFixed(2)}</td>
+          </tr>
+        ))}
+      </tbody>
     </table>
   );
 };
