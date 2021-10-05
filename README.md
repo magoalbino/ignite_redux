@@ -18,3 +18,12 @@
 ---
 
 - O redux saga funciona como um middleware do redux. Nesta aplicação: quando um produto for adicionado no carrinho, antes de executar a ação de adicionar, o middleware vai buscar na api se aquela quantidadde está disponível.
+
+---
+
+- Podemos definir 'enums' em arquivos gerais da aplicação para funcionar como as constantes no php. Exemplo:
+  "export enum ActionTypes {
+  addProductToCartRequest = "ADD_PRODUCT_TO_CART_REQUEST",
+  addProductToCartSuccess = "ADD_PRODUCT_TO_CART_SUCCESS",
+  addProductToCartFailure = "ADD_PRODUCT_TO_CART_FAILURE",
+  }"

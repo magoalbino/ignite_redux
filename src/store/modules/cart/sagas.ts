@@ -1,9 +1,21 @@
-import { all, select, takeLatest } from "redux-saga/effects";
+import { AxiosResponse } from "axios";
+import { all, call, put, select, takeLatest } from "redux-saga/effects";
 import { IState } from "../..";
-import { addProductToCart } from "./actions";
+import api from "../../../services/api";
+import {
+  addProductToCartFailure,
+  addProductToCartRequest,
+  addProductToCartSuccess,
+} from "./actions";
+import { ActionTypes } from "./types";
 
 //wow.. é quase uma gambiarra pro typescript funfar
-type CheckProductStockRequest = ReturnType<typeof addProductToCart>;
+type CheckProductStockRequest = ReturnType<typeof addProductToCartRequest>;
+
+interface IStockResponse {
+  id: number;
+  quantity: number;
+}
 
 // o reducer não espera essa função terminar para executar a ação
 // os dois são feitos ao mesmo tempo
@@ -16,8 +28,21 @@ function* checkProductStock({ payload }: CheckProductStockRequest) {
         ?.quantity ?? 0
     );
   });
+
+  const availableStockResponse: AxiosResponse<IStockResponse> = yield call(
+    api.get,
+    `stock/${product.id}`
+  );
+
+  if (availableStockResponse.data.quantity > currentQuantity) {
+    yield put(addProductToCartSuccess(product));
+  } else {
+    yield put(addProductToCartFailure(product.id));
+  }
 }
 
 // O takeLatest cancela as requisições anteriores e pega só a última
 // Imaginando que a pessoa clique várias vezes seguidas no botão fazendo várias requisições
-export default all([takeLatest("ADD_PRODUCT_TO_CART", checkProductStock)]);
+export default all([
+  takeLatest(ActionTypes.addProductToCartRequest, checkProductStock),
+]);
